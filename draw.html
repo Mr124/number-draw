@@ -1,109 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
-  <meta charset="utf-8">
-  <title>数字抽取系统</title>
+  <meta charset="UTF-8">
+  <title>抽号页面</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap: 8px;
-      width: 320px;
-      margin-bottom: 20px;
-    }
-    .num {
-      padding: 12px 0;
       text-align: center;
-      border: 1px solid #333;
-      cursor: pointer;
-      font-size: 16px;
-      border-radius: 6px;
-      background: #f5f5f5;
+      padding-top: 60px;
+      background: #f0f2f5;
     }
-    .used {
-      background: #ccc;
-      color: #666;
-      cursor: not-allowed;
-    }
-    .active {
-      background: #4caf50;
-      color: white;
-      animation: pop 0.3s ease;
-    }
-    @keyframes pop {
-      0% { transform: scale(0.8); }
-      100% { transform: scale(1); }
+    .card {
+      background: white;
+      display: inline-block;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      min-width: 300px;
     }
     button {
-      padding: 8px 16px;
-      margin-right: 10px;
+      font-size: 20px;
+      padding: 12px 30px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 8px;
+      background: #4caf50;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+    .number {
+      font-size: 48px;
+      margin: 20px 0;
+      color: #333;
+    }
+    .info {
+      color: #555;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
-<h2>数字抽取（00–99）</h2>
-
-<div class="grid" id="grid"></div>
-
-<button onclick="draw()">开始抽取</button>
-<button onclick="resetAll()">重置</button>
-
-<p id="info"></p>
+<div class="card">
+  <h1>抽一个数字</h1>
+  <div class="number" id="number">--</div>
+  <button onclick="draw()">抽号</button>
+  <div class="info" id="info"></div>
+</div>
 
 <script>
-const grid = document.getElementById("grid");
-const info = document.getElementById("info");
-let boxes = {};
-
-// 生成 00–99 网格
-for (let i = 0; i < 100; i++) {
-  const num = i.toString().padStart(2, "0");
-  const div = document.createElement("div");
-  div.className = "num";
-  div.innerText = num;
-  grid.appendChild(div);
-  boxes[num] = div;
-}
-
-function draw() {
-  fetch("https://number-draw.onrender.com/draw")
-    .then(res => res.json())
-    .then(data => {
-      if (data.error) {
-        info.innerText = "已经全部抽完了";
-        return;
-      }
-
-      const n = data.number;
-
-      boxes[n].classList.add("active");
-      setTimeout(() => {
-        boxes[n].classList.remove("active");
-        boxes[n].classList.add("used");
-      }, 300);
-
-      info.innerText = `抽中：${n} ｜ 剩余：${data.left}`;
-    });
-}
-
-function resetAll() {
-  fetch("https://number-draw.onrender.com/reset")
-    .then(() => {
-      info.innerText = "";
-      Object.values(boxes).forEach(b => {
-        b.className = "num";
+  function draw() {
+    fetch("https://number-draw.onrender.com/draw")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("number").innerText = data.number;
+        document.getElementById("info").innerText =
+          "剩余数量：" + data.left;
+      })
+      .catch(() => {
+        alert("接口请求失败");
       });
-    });
-}
+  }
 </script>
 
 </body>
 </html>
-
-
-
-
