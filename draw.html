@@ -91,7 +91,7 @@ function draw() {
 }
 
 function resetAll() {
-  fetch("http://127.0.0.1:8000/reset")
+  fetch("http://127.0.0.1:8000/draw")
     .then(() => {
       info.innerText = "";
       Object.values(boxes).forEach(b => {
@@ -103,4 +103,5 @@ function resetAll() {
 
 </body>
 </html>
+
 
